@@ -1,0 +1,6 @@
+export { default as Usuario } from './Usuario.js'
+export { default as Propiedad } from './Propiedad.js'
+export { default as Imagen } from './Imagen.js'
+export { default as Chat } from './Chat.js'
+export { default as Mensaje } from './Mensaje.js'
+export { default as Favorito } from './Favorito.js'
