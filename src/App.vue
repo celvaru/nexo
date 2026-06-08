@@ -1,26 +1,6 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg" style="background-color: mediumorchid;">
-      <div class="container-fluid">
-        <router-link class="navbar-brand text-white" to="/">Nexo Inmobiliario</router-link>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNavegacion">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="menuNavegacion">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <router-link class="nav-link text-white" to="/">Crear cuenta</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link text-white" to="/propiedades">Iniciar sesión</router-link>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
+    <Navbar />
     <div class="contenido-principal">
       <router-view />
     </div>
@@ -28,12 +8,28 @@
 </template>
 
 <script>
+import Navbar from './components/Encabezado.vue'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    Navbar
+  }
 }
 </script>
 
 <style>
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Rubik', sans-serif;
+}
+
+.container-fluid {
+  max-width: 100% !important;
+}
 
 body {
   background-color: lavender;

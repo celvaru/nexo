@@ -14,4 +14,26 @@ const iniciarSesion = (req, res) => {
     })
 }
 
-module.exports = { iniciarSesion }
+const registrar = (req, res) => {
+    const { nombre, apPaterno, apMaterno, correo, usuario, password, celular } = req.body
+    
+    const sql = 'INSERT INTO Usuario (nombre, apPaterno, apMaterno, correo, usuario, password, celular) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    
+    req.db.query(sql, [nombre, apPaterno, apMaterno, correo, usuario, password, celular], (error, resultado) => {
+        if (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({ error: 'El correo o usuario ya existe' })
+            }
+            console.error('Error:', error)
+            return res.status(500).json({ error: 'Error en el servidor' })
+        }
+        
+        res.json({ 
+            exito: true, 
+            mensaje: 'Usuario registrado correctamente',
+            usuarioId: resultado.insertId
+        })
+    })
+}
+
+module.exports = { iniciarSesion, registrar }
