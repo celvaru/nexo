@@ -1,27 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import InicioVista from '../views/InicioVista.vue'
+import MapaVista from '../views/MapaVista.vue'
+import LoginVista from '../views/LoginVista.vue'
+import RegistroVista from '../views/RegistroVista.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'inicio',
-    component: InicioVista
-  },
-  {
-    path: '/propiedades',
-    name: 'propiedades',
-    component: () => import('../views/PropiedadesVista.vue')
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('../views/LoginVista.vue')
-  },
-  {
-    path: '/registro',
-    name: 'registro',
-    component: () => import('../views/RegistroVista.vue')
-  }
+  { path: '/', name: 'Inicio', component: InicioVista },
+  { path: '/mapa', name: 'Mapa', component: MapaVista },
+  { path: '/login', name: 'Login', component: LoginVista },
+  { path: '/registro', name: 'Registro', component: RegistroVista },
 ]
 
 const router = createRouter({

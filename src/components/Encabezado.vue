@@ -7,7 +7,6 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- Mostrar el menú SOLO si NO está en login o registro -->
       <div v-if="!ocultarMenu" class="collapse navbar-collapse" id="menuNavegacion">
         <ul class="navbar-nav ms-auto">
           <template v-if="usuario">
@@ -40,7 +39,7 @@
 
 <script>
 export default {
-  name: 'Navbar',
+  name: 'Encabezado',
   data() {
     return {
       usuario: null,
@@ -56,7 +55,6 @@ export default {
     window.removeEventListener('storage', this.verificarSesion)
   },
   watch: {
-    // Observar cambios en la ruta
     '$route.path'() {
       this.verificarRuta()
     }
@@ -67,7 +65,6 @@ export default {
       this.usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null
     },
     verificarRuta() {
-      // Ocultar menú en las rutas de login y registro
       const rutaActual = this.$route.path
       this.ocultarMenu = rutaActual === '/login' || rutaActual === '/registro'
     },
@@ -79,3 +76,22 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-link:hover {
+  background-color: mediumpurple;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.navbar-brand:hover {
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+
+</style>

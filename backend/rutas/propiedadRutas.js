@@ -1,12 +1,10 @@
 const express = require('express')
-const { obtenerTodas, crearPropiedad, destacarPropiedad, reportarPropiedad, ocultarPropiedad, registrarVisita } = require('../controladores/propiedadControl')
+const { obtenerTodas, obtenerPorId, crearPropiedad, obtenerCiudades } = require('../controladores/propiedadControl')
 const enrutador = express.Router()
 
 enrutador.get('/', obtenerTodas)
+enrutador.get('/ciudades', obtenerCiudades)
+enrutador.get('/:id', obtenerPorId)
 enrutador.post('/', crearPropiedad)
-enrutador.put('/destacar', destacarPropiedad)
-enrutador.put('/reportar', reportarPropiedad)
-enrutador.put('/ocultar', ocultarPropiedad)
-enrutador.post('/visita', registrarVisita)
 
 module.exports = enrutador
