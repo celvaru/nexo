@@ -36,4 +36,27 @@ const registrar = (req, res) => {
     })
 }
 
-module.exports = { iniciarSesion, registrar }
+const obtenerUsuarioActual = (req, res) => {
+    const { usuarioId } = req.params
+    
+    const sql = 'SELECT id, nombre, apPaterno, apMaterno, correo, usuario, celular, tipo, publicacionesRestantes, chatsRestantes, puntuacion, totalVotos, bloqueado FROM Usuario WHERE id = ?'
+    
+    req.db.query(sql, [usuarioId], (error, resultados) => {
+        if (error) return res.status(500).json({ error: 'Error en el servidor' })
+        if (resultados.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' })
+        res.json(resultados[0])
+    })
+}
+
+const actualizarPerfil = (req, res) => {
+    const { id, nombre, apPaterno, apMaterno, celular } = req.body
+    
+    const sql = 'UPDATE Usuario SET nombre = ?, apPaterno = ?, apMaterno = ?, celular = ? WHERE id = ?'
+    
+    req.db.query(sql, [nombre, apPaterno, apMaterno, celular, id], (error) => {
+        if (error) return res.status(500).json({ error: 'Error al actualizar' })
+        res.json({ exito: true, mensaje: 'Perfil actualizado' })
+    })
+}
+
+module.exports = { iniciarSesion, registrar, obtenerUsuarioActual, actualizarPerfil }

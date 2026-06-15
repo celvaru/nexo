@@ -17,7 +17,6 @@ const conexion = mysql.createConnection({
 
 conexion.connect()
 
-// Pasar conexión a las rutas
 app.use((req, res, next) => {
     req.db = conexion
     next()
