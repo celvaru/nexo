@@ -37,18 +37,13 @@ const crearPropiedad = (req, res) => {
 }
 
 const obtenerCiudades = (req, res) => {
-    const sql = 'SELECT DISTINCT ubicacion FROM Propiedad ORDER BY ubicacion'
+    const sql = 'SELECT DISTINCT ciudad FROM Propiedad WHERE ciudad IS NOT NULL AND ciudad != "" ORDER BY ciudad'
     
     req.db.query(sql, (error, datos) => {
         if (error) return res.status(500).json({ error: error.message })
         
-        const ciudades = datos.map(item => {
-            const ciudad = item.ubicacion.split(',')[0].trim()
-            return ciudad
-        })
-        
-        const ciudadesUnicas = [...new Set(ciudades)]
-        res.json(ciudadesUnicas)
+        const ciudades = datos.map(item => item.ciudad)
+        res.json(ciudades)
     })
 }
 
