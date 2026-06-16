@@ -33,7 +33,7 @@
             <select class="form-select form-select-sm" v-model="filtros.ordenar" @change="cargarDatos">
               <option value="precio_asc">Precio (menor)</option>
               <option value="precio_desc">Precio (mayor)</option>
-              <option value="votos_desc">Más votados</option>
+              <option value="favoritos_desc">Más favoritos</option>
               <option value="categoria">Categoría</option>
             </select>
           </div>
@@ -54,36 +54,38 @@
           <p class="mb-0">No se encontraron propiedades</p>
         </div>
         <div v-else>
-          <table class="table table-sm table-hover" id="tabla-propiedades">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Vendedor</th>
-                <th>Precio</th>
-                <th>Ciudad</th>
-                <th>Categoría</th>
-                <th>Votos</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="prop in propiedades" :key="prop.id">
-                <td>{{ prop.id }}</td>
-                <td>{{ prop.titulo }}</td>
-                <td>{{ prop.vendedor || prop.usuario }}</td>
-                <td>${{ prop.precio.toLocaleString() }}</td>
-                <td>{{ prop.ciudad }}</td>
-                <td>{{ prop.categoria === 1 ? 'Casa' : prop.categoria === 2 ? 'Depto' : 'Terreno' }}</td>
-                <td>{{ prop.puntuacion || prop.votos || 0 }}</td>
-                <td>
-                  {{ prop.vendida ? 'Vendida' : 'Disponible' }}
-                  <span v-if="prop.reportada">, Reportada</span>
-                  <span v-if="prop.oculta">, Oculta</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover" id="tabla-propiedades">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Vendedor</th>
+                  <th>Precio</th>
+                  <th>Ciudad</th>
+                  <th>Categoría</th>
+                  <th>Favoritos</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="prop in propiedades" :key="prop.id">
+                  <td>{{ prop.id }}</td>
+                  <td>{{ prop.titulo }}</td>
+                  <td>{{ prop.vendedor || prop.usuario }}</td>
+                  <td>${{ prop.precio.toLocaleString() }}</td>
+                  <td>{{ prop.ciudad }}</td>
+                  <td>{{ prop.categoria === 1 ? 'Casa' : prop.categoria === 2 ? 'Depto' : 'Terreno' }}</td>
+                  <td>{{ prop.totalFavoritos || 0 }}</td>
+                  <td>
+                    {{ prop.vendida ? 'Vendida' : 'Disponible' }}
+                    <span v-if="prop.reportada" class="badge bg-warning ms-1">Reportada</span>
+                    <span v-if="prop.oculta" class="badge bg-secondary ms-1">Oculta</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <div class="text-center">
             <small class="text-muted">Total: {{ propiedades.length }} propiedades</small>
           </div>
@@ -141,17 +143,17 @@ export default {
       }
     },
     async generarPDF() {
-        try {
-            await pdfService.generarPDFTabla('tabla-propiedades', {
-            titulo: 'Reporte de Propiedades',
-            nombreArchivo: 'reporte_propiedades',
-            logo: logoNegro,
-            orientacion: 'landscape'
-            })
-        } catch (error) {
-            console.error('Error:', error)
-            alert('Error al generar el PDF')
-        }
+      try {
+        await pdfService.generarPDFTabla('tabla-propiedades', {
+          titulo: 'Reporte de Propiedades',
+          nombreArchivo: 'reporte_propiedades',
+          logo: logoNegro,
+          orientacion: 'landscape'
+        })
+      } catch (error) {
+        console.error('Error:', error)
+        alert('Error al generar el PDF')
+      }
     }
   }
 }

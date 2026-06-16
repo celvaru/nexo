@@ -3,7 +3,7 @@ const obtenerTodas = (req, res) => {
         SELECT p.*, 
                CONCAT('http://localhost:3000/recursos/', p.id, '-001.jpg') as imagenPrincipal
         FROM Propiedad p 
-        WHERE p.estado = TRUE 
+        WHERE p.estado = TRUE AND p.oculta = FALSE
         ORDER BY p.id DESC
     `
     
@@ -25,12 +25,16 @@ const obtenerPorId = (req, res) => {
 }
 
 const crearPropiedad = (req, res) => {
-    const { titulo, descripcion, precio, ubicacion, latitud, longitud, categoria, numHabitaciones, estacionamiento, superficie, usuarioId } = req.body
+    const { titulo, descripcion, precio, ubicacion, latitud, longitud, categoria, numHabitaciones, estacionamiento, superficie, usuarioId, destacada } = req.body
     
-    const sql = `INSERT INTO Propiedad (titulo, descripcion, precio, ubicacion, latitud, longitud, categoria, numHabitaciones, estacionamiento, superficie, usuarioId)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    const fechaDestacado = destacada ? new Date().toISOString().split('T')[0] : null
     
-    req.db.query(sql, [titulo, descripcion, precio, ubicacion, latitud, longitud, categoria, numHabitaciones, estacionamiento, superficie, usuarioId], (error, resultado) => {
+    const sql = `
+        INSERT INTO Propiedad (titulo, descripcion, precio, ubicacion, latitud, longitud, categoria, numHabitaciones, estacionamiento, superficie, usuarioId, destacada, fechaDestacado)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `
+    
+    req.db.query(sql, [titulo, descripcion, precio, ubicacion, latitud, longitud, categoria, numHabitaciones, estacionamiento, superficie, usuarioId, destacada || false, fechaDestacado], (error, resultado) => {
         if (error) return res.status(500).json({ error: error.message })
         res.json({ exito: true, id: resultado.insertId })
     })
@@ -41,12 +45,20 @@ const obtenerCiudades = (req, res) => {
     
     req.db.query(sql, (error, datos) => {
         if (error) return res.status(500).json({ error: error.message })
-        
         const ciudades = datos.map(item => item.ciudad)
         res.json(ciudades)
     })
 }
 
+const togglePropiedadEstado = (req, res) => {
+    const { id } = req.params
+    const { vendida, oculta } = req.body
+    
+    const sql = 'UPDATE Propiedad SET vendida = ?, oculta = ? WHERE id = ?'
+    req.db.query(sql, [vendida || false, oculta || false, id], (error, resultado) => {
+        if (error) return res.status(500).json({ error: error.message })
+        res.json({ exito: true })
+    })
+}
 
-
-module.exports = { obtenerTodas, obtenerPorId, crearPropiedad, obtenerCiudades }
+module.exports = { obtenerTodas, obtenerPorId, crearPropiedad, obtenerCiudades, togglePropiedadEstado }
