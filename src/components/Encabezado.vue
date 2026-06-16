@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg" style="background-color: mediumorchid;">
     <div class="container-fluid">
       <router-link class="navbar-brand text-white" :to="logoLink">
-        <!-- <img :src="logoUrl" alt="Logo" height="35" class="me-2"> -->
+        <img src="@/components/icons/logo-blanco.png" alt="Logo" height="35" class="me-2">
         Nexo Inmobiliario
       </router-link>
       
@@ -16,8 +16,8 @@
             <!-- Menú para admin -->
             <template v-if="usuario.tipo === 'admin'">
               <li class="nav-item">
-                <router-link class="nav-link text-white" to="/admin">
-                  Reportes
+                <router-link class="nav-link text-white" to="/admin/documentos">
+                  Documentos
                 </router-link>
               </li>
               <li class="nav-item">

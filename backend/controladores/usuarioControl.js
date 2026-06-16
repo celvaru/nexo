@@ -78,32 +78,49 @@ const obtenerEstadisticas = (req, res) => {
     }
 }
 
-// Obtener usuarios con filtros
 const obtenerUsuarios = (req, res) => {
-    const { tipo, bloqueado, busqueda } = req.query
-    let sql = 'SELECT id, nombre, apPaterno, correo, usuario, tipo, bloqueado, fechaPremium, publicacionesRestantes, chatsRestantes FROM Usuario WHERE 1=1'
+    const { tipo, bloqueado, busqueda, orden } = req.query
+    
+    let sql = `
+        SELECT u.id, u.nombre, u.apPaterno, u.correo, u.usuario, u.tipo, u.bloqueado, 
+               u.fechaPremium, u.publicacionesRestantes, u.chatsRestantes,
+               (SELECT COUNT(*) FROM Propiedad WHERE usuarioId = u.id) as totalPublicaciones,
+               (SELECT COUNT(*) FROM Propiedad WHERE usuarioId = u.id AND vendida = 1) as totalVendidos
+        FROM Usuario u
+        WHERE 1=1
+    `
     const params = []
     
     if (tipo && tipo !== 'todos') {
-        sql += ' AND tipo = ?'
+        sql += ' AND u.tipo = ?'
         params.push(tipo)
     }
     
     if (bloqueado !== undefined && bloqueado !== 'todos') {
-        sql += ' AND bloqueado = ?'
-        params.push(bloqueado === 'true')
+        sql += ' AND u.bloqueado = ?'
+        params.push(bloqueado === 'true' ? 1 : 0)
     }
     
-    if (busqueda) {
-        sql += ' AND (nombre LIKE ? OR usuario LIKE ? OR correo LIKE ?)'
+    if (busqueda && busqueda.trim()) {
+        sql += ' AND (u.nombre LIKE ? OR u.usuario LIKE ? OR u.correo LIKE ?)'
         const termino = `%${busqueda}%`
         params.push(termino, termino, termino)
     }
     
-    sql += ' ORDER BY id DESC'
+    // Ordenamiento
+    if (orden === 'publicaciones') {
+        sql += ' ORDER BY totalPublicaciones DESC'
+    } else if (orden === 'vendidos') {
+        sql += ' ORDER BY totalVendidos DESC'
+    } else {
+        sql += ' ORDER BY u.id DESC'
+    }
     
     req.db.query(sql, params, (error, datos) => {
-        if (error) return res.status(500).json({ error: error.message })
+        if (error) {
+            console.error('Error en obtenerUsuarios:', error)
+            return res.status(500).json({ error: error.message })
+        }
         res.json(datos)
     })
 }
@@ -119,13 +136,12 @@ const toggleBloqueoUsuario = (req, res) => {
         res.json({ exito: true, mensaje: bloquear ? 'Usuario bloqueado' : 'Usuario desbloqueado' })
     })
 }
-
-// Obtener propiedades con filtros para reportes
-// Obtener propiedades con filtros para reportes
 const obtenerPropiedadesReporte = (req, res) => {
-    const { categoria, ciudad, vendida, reportada, desde, hasta, busqueda } = req.query
+    const { categoria, ciudad, vendida, reportada, oculta, desde, hasta, busqueda, orden } = req.query
+    
     let sql = `
-        SELECT p.*, u.nombre as vendedor, u.usuario 
+        SELECT p.*, u.nombre as vendedor, u.usuario,
+               (SELECT COUNT(*) FROM Voto WHERE usuarioId = u.id AND tipo = 'positivo') as votos
         FROM Propiedad p
         INNER JOIN Usuario u ON p.usuarioId = u.id
         WHERE 1=1
@@ -144,15 +160,19 @@ const obtenerPropiedadesReporte = (req, res) => {
     
     if (vendida !== undefined && vendida !== 'todos') {
         sql += ' AND p.vendida = ?'
-        params.push(vendida === 'true')
+        params.push(vendida === 'true' ? 1 : 0)
     }
     
     if (reportada !== undefined && reportada !== 'todos') {
         sql += ' AND p.reportada = ?'
-        params.push(reportada === 'true')
+        params.push(reportada === 'true' ? 1 : 0)
     }
     
-    // Búsqueda por texto
+    if (oculta !== undefined && oculta !== 'todos') {
+        sql += ' AND p.oculta = ?'
+        params.push(oculta === 'true' ? 1 : 0)
+    }
+    
     if (busqueda && busqueda.trim()) {
         sql += ' AND (p.titulo LIKE ? OR u.nombre LIKE ? OR u.usuario LIKE ?)'
         const termino = `%${busqueda}%`
@@ -169,10 +189,24 @@ const obtenerPropiedadesReporte = (req, res) => {
         params.push(hasta)
     }
     
-    sql += ' ORDER BY p.id DESC'
+    // Ordenamiento
+    if (orden === 'precio_asc') {
+        sql += ' ORDER BY p.precio ASC'
+    } else if (orden === 'precio_desc') {
+        sql += ' ORDER BY p.precio DESC'
+    } else if (orden === 'votos_desc') {
+        sql += ' ORDER BY votos DESC'
+    } else if (orden === 'categoria') {
+        sql += ' ORDER BY p.categoria ASC'
+    } else {
+        sql += ' ORDER BY p.id DESC'
+    }
     
     req.db.query(sql, params, (error, datos) => {
-        if (error) return res.status(500).json({ error: error.message })
+        if (error) {
+            console.error('Error en obtenerPropiedadesReporte:', error)
+            return res.status(500).json({ error: error.message })
+        }
         res.json(datos)
     })
 }

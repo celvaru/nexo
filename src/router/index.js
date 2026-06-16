@@ -5,18 +5,16 @@ import LoginVista from '../views/LoginVista.vue'
 import RegistroVista from '../views/RegistroVista.vue'
 import Dashboard from '../views/Dashboard.vue'
 import { getUsuario, isAdmin, isAuthenticated } from '../stores/autenticar.js'
+import Documentos from '../views/Documentos.vue'
+
 
 const routes = [
   { path: '/', name: 'Inicio', component: InicioVista },
   { path: '/mapa', name: 'Mapa', component: MapaVista },
   { path: '/login', name: 'Login', component: LoginVista },
   { path: '/registro', name: 'Registro', component: RegistroVista },
-  { 
-    path: '/admin', 
-    name: 'Admin', 
-    component: Dashboard,
-    meta: { requiresAdmin: true }
-  },
+  { path: '/admin', name: 'Admin', component: Dashboard, meta: { requiresAdmin: true }},
+  { path: '/admin/documentos', name: 'Documentos', component: Documentos, meta: { requiresAdmin: true } }
 ]
 
 const router = createRouter({
