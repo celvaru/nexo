@@ -47,4 +47,6 @@ const obtenerCiudades = (req, res) => {
     })
 }
 
+
+
 module.exports = { obtenerTodas, obtenerPorId, crearPropiedad, obtenerCiudades }

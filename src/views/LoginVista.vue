@@ -14,9 +14,7 @@
           <div v-if="error" class="alert alert-danger mt-3">{{ error }}</div>
         </form>
         <hr>
-        <div class="text-center">
-          <router-link to="/registro">¿No tienes cuenta? Regístrate</router-link>
-        </div>
+        <div class="text-center"><router-link to="/registro">¿No tienes cuenta? Regístrate</router-link></div>
       </div>
     </div>
   </div>
@@ -36,19 +34,22 @@ export default {
     async login() {
       this.cargando = true
       this.error = ''
-      
       try {
         const res = await fetch('http://localhost:3000/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ correo: this.correo, password: this.password })
         })
-        
         const data = await res.json()
-        
         if (res.ok) {
           localStorage.setItem('usuario', JSON.stringify(data.usuario))
-          window.location.href = '/'
+          
+          // Redirigir según el tipo de usuario
+          if (data.usuario.tipo === 'admin') {
+            this.$router.push('/admin')
+          } else {
+            this.$router.push('/')
+          }
         } else {
           this.error = data.error
         }
